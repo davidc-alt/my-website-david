@@ -1,0 +1,935 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2575.5">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="en"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Blood Type Interactive Model By David B&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Custom styles - kept relatively simple */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.draggable {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>touch-action: none;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: grab;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>user-select: none; /* Prevent text selection during drag */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.dragging {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>opacity: 0.5;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: grabbing;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.drop-zone {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 2px dashed #ccc;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>transition: background-color 0.3s ease;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>min-height: 50px; /* Ensure drop zones have some height */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.drop-zone-hover {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #e0f2fe;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.correct-drop {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #dcfce7;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-color: #22c55e;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.incorrect-drop {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #fee2e2;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border-color: #ef4444;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.clumped {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #fecaca;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-image: radial-gradient(#ef4444 20%, transparent 20%),</p>
+<p class="p1"><span class="Apple-converted-space">                              </span>radial-gradient(#ef4444 20%, transparent 20%);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-size: 10px 10px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-position: 0 0, 5px 5px;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid #dc2626;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.not-clumped {</p>
+<p class="p1"><span class="Apple-converted-space">             </span>background-color: #fda4af;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>border: 1px solid #f43f5e;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Styling for Hemostasis steps */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.step-source .step {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>background-color: #e0e7ff; /* Light indigo */</p>
+<p class="p1"><span class="Apple-converted-space">            </span>border: 1px solid #a5b4fc; /* Indigo */</p>
+<p class="p1"><span class="Apple-converted-space">            </span>cursor: grab; /* Ensure steps in source are grabbable */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.step-target .step {</p>
+<p class="p1"><span class="Apple-converted-space">             </span>background-color: #f3f4f6; /* Light gray */</p>
+<p class="p1"><span class="Apple-converted-space">             </span>border: 1px solid #d1d5db; /* Gray */</p>
+<p class="p1"><span class="Apple-converted-space">             </span>cursor: default; /* Steps in target are not grabbable */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.step-target.correct-sequence .step {</p>
+<p class="p1"><span class="Apple-converted-space">             </span>background-color: #dcfce7; /* Light green */</p>
+<p class="p1"><span class="Apple-converted-space">             </span>border: 1px solid #86efac; /* Green */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body class="font-[Inter,sans-serif] bg-gray-100 text-gray-800"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="container mx-auto p-4 md:p-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;header class="bg-red-600 text-white p-6 rounded-lg shadow-md mb-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;h1 class="text-3xl md:text-4xl font-bold"&gt;Blood Type Interactive Model By David B&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;p class="mt-2 text-lg"&gt;Your interactive guide to the world of blood!&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;nav class="mb-8 bg-white p-4 rounded-lg shadow-sm"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;ul class="flex flex-wrap gap-2 justify-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;&lt;button onclick="showPage('home')" class="nav-button bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300"&gt;Home&lt;/button&gt;&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;&lt;button onclick="showPage('components')" class="nav-button bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300"&gt;Components&lt;/button&gt;&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;&lt;button onclick="showPage('types')" class="nav-button bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300"&gt;Blood Types&lt;/button&gt;&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;&lt;button onclick="showPage('inheritance')" class="nav-button bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300"&gt;Inheritance&lt;/button&gt;&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;&lt;button onclick="showPage('transfusions')" class="nav-button bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300"&gt;Transfusions&lt;/button&gt;&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;&lt;button onclick="showPage('hemostasis')" class="nav-button bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300"&gt;Hemostasis&lt;/button&gt;&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;li&gt;&lt;button onclick="showPage('quiz')" class="nav-button bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded transition duration-300"&gt;Quiz&lt;/button&gt;&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/ul&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/nav&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;main id="page-content" class="bg-white p-6 rounded-lg shadow-md min-h-[400px]"&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="home" class="page active-page"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-2xl font-semibold mb-4 text-red-700"&gt;Welcome!&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="mb-4"&gt;welcome to this website about blood basics, in witch ill do my best to teach you about soothing I learned about 2 hrs ago! I hope most of this is correct, but at this point im on so much caffeine, and its 3 am, so yea :.3.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="mb-4"&gt;There is no prior knowledge needed, everything you should need should be on here(I hope)&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p&gt;Use the buttons above to navigate through the different topics.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;div class="mt-6 text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;svg class="inline-block w-24 h-24 text-red-500" fill="currentColor" viewBox="0 0 20 20"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;p class="mt-2 font-semibold"&gt;Blood is essential for life!&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="components" class="page hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-2xl font-semibold mb-4 text-red-700"&gt;What's in Blood? - The Components&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="mb-4"&gt;Blood might look like just red liquid, but it's actually a complex mixture.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="mb-2"&gt;The liquid part is called &lt;strong&gt;Plasma&lt;/strong&gt;. It's mostly water, but carries nutrients, hormones, and proteins.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="mb-4"&gt;Floating in the plasma are different types of cells and fragments:&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;ul class="list-disc list-inside mb-4 space-y-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li&gt;&lt;strong&gt;Red Blood Cells (RBCs):&lt;/strong&gt; Carry oxygen. Most numerous.&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li&gt;&lt;strong&gt;White Blood Cells (WBCs):&lt;/strong&gt; Fight infections. Body's defense force.&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li&gt;&lt;strong&gt;Platelets:&lt;/strong&gt; Tiny fragments that help blood clot.&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/ul&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h3 class="text-xl font-semibold mb-2"&gt;Activity: Build-A-Blood-Drop&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="mb-4 text-sm text-gray-600"&gt;Drag components into the Plasma pool below to see what blood contains. You can add multiple copies of each component (like many RBCs!). Click a component in the pool to learn its function.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="flex flex-col md:flex-row gap-4 items-start"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="flex flex-row md:flex-col gap-2 mb-4 md:mb-0 p-4 border border-gray-300 rounded-lg bg-gray-50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;p class="font-semibold mb-2 text-center md:text-left"&gt;Drag These:&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div id="drag-rbc" draggable="true" class="draggable p-2 bg-red-400 text-white rounded shadow cursor-grab text-center" data-info="Red Blood Cell: Carries Oxygen."&gt;RBC&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div id="drag-wbc" draggable="true" class="draggable p-2 bg-blue-400 text-white rounded shadow cursor-grab text-center" data-info="White Blood Cell: Fights infection. Part of the immune system."&gt;WBC&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div id="drag-platelet" draggable="true" class="draggable p-2 bg-yellow-400 text-gray-800 rounded shadow cursor-grab text-center" data-info="Platelet: Small fragment that helps blood clot."&gt;Platelet&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div id="plasma-pool" class="drop-zone flex-grow min-h-[200px] p-4 bg-yellow-100 rounded-lg border-2 border-dashed border-yellow-400 relative"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="absolute top-2 left-2 text-yellow-700 font-semibold"&gt;Plasma Pool&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;div id="component-info" class="w-full md:w-1/3 p-4 border border-gray-300 rounded-lg bg-gray-50 min-h-[100px]"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="font-semibold mb-2"&gt;Component Info:&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p id="info-text" class="text-gray-700"&gt;Click on a component in the pool to see its info here.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="types" class="page hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;h2 class="text-2xl font-semibold mb-4 text-red-700"&gt;Blood Types - ABO &amp; Rh&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="mb-4"&gt;Your blood type is like an ID tag for your red blood cells, determined by markers called &lt;strong&gt;Antigens&lt;/strong&gt;.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h3 class="text-xl font-semibold mb-2"&gt;ABO System&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;ul class="list-disc list-inside mb-2 space-y-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li&gt;Type A: Has A antigens, Anti-B antibodies.&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li&gt;Type B: Has B antigens, Anti-A antibodies.&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li&gt;Type AB: Has BOTH A and B antigens, NO ABO antibodies.&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li&gt;Type O: Has NEITHER A nor B antigens, BOTH Anti-A and Anti-B antibodies.&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/ul&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;h3 class="text-xl font-semibold mb-2"&gt;Rh System&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;ul class="list-disc list-inside mb-4 space-y-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li&gt;Rh Positive (+): Has the Rh antigen.&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li&gt;Rh Negative (-): Does NOT have the Rh antigen. Can develop Anti-Rh antibodies if exposed to Rh+ blood.&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;/ul&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;h3 class="text-xl font-semibold mb-2"&gt;What is Agglutination?&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;p class="mb-4 p-4 bg-red-100 border border-red-300 rounded-lg"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;strong&gt;Agglutination&lt;/strong&gt; means 'clumping together'. This happens when antibodies in plasma encounter the specific antigens they target on red blood cells (e.g., Anti-A antibodies + Type A RBCs = Clumping). This is dangerous inside the body as it blocks blood flow.</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;/p&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h3 class="text-xl font-semibold mb-2"&gt;Activity: Virtual Blood Typing Lab&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="mb-4 text-sm text-gray-600"&gt;Add virtual 'Anti-A', 'Anti-B', and 'Anti-Rh' serums to each sample. Observe if &lt;strong&gt;agglutination&lt;/strong&gt; (clumping) occurs. Determine the blood type using the results and the chart.&lt;/p&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="border p-4 rounded-lg shadow-sm bg-gray-50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h4 class="font-semibold mb-3 text-center"&gt;Sample 1 (&lt;span class="sample-type" data-type="A+"&gt;???&lt;/span&gt;)&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="flex justify-around mb-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div id="s1-anti-a" class="w-12 h-12 rounded-full mx-auto mb-1 border border-gray-400 not-clumped"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;button onclick="addSerum('s1', 'anti-a', 'A+')" class="text-xs bg-blue-500 hover:bg-blue-700 text-white px-2 py-1 rounded"&gt;Anti-A&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div id="s1-anti-b" class="w-12 h-12 rounded-full mx-auto mb-1 border border-gray-400 not-clumped"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;button onclick="addSerum('s1', 'anti-b', 'A+')" class="text-xs bg-yellow-500 hover:bg-yellow-700 text-white px-2 py-1 rounded"&gt;Anti-B&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div id="s1-anti-rh" class="w-12 h-12 rounded-full mx-auto mb-1 border border-gray-400 not-clumped"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;button onclick="addSerum('s1', 'anti-rh', 'A+')" class="text-xs bg-green-500 hover:bg-green-700 text-white px-2 py-1 rounded"&gt;Anti-Rh&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label for="s1-guess" class="mr-2"&gt;Guess:&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;select id="s1-guess" class="border rounded p-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value=""&gt;Select&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="A+"&gt;A+&lt;/option&gt; &lt;option value="A-"&gt;A-&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="B+"&gt;B+&lt;/option&gt; &lt;option value="B-"&gt;B-&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="AB+"&gt;AB+&lt;/option&gt; &lt;option value="AB-"&gt;AB-&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="O+"&gt;O+&lt;/option&gt; &lt;option value="O-"&gt;O-&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button onclick="checkType('s1', 'A+')" class="bg-gray-500 hover:bg-gray-700 text-white px-2 py-1 rounded ml-2"&gt;Check&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;p id="s1-feedback" class="text-center mt-2 text-sm font-semibold"&gt;&amp;nbsp;&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;div class="border p-4 rounded-lg shadow-sm bg-gray-50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h4 class="font-semibold mb-3 text-center"&gt;Sample 2 (&lt;span class="sample-type" data-type="O-"&gt;???&lt;/span&gt;)&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;div class="flex justify-around mb-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div id="s2-anti-a" class="w-12 h-12 rounded-full mx-auto mb-1 border border-gray-400 not-clumped"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;button onclick="addSerum('s2', 'anti-a', 'O-')" class="text-xs bg-blue-500 hover:bg-blue-700 text-white px-2 py-1 rounded"&gt;Anti-A&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div id="s2-anti-b" class="w-12 h-12 rounded-full mx-auto mb-1 border border-gray-400 not-clumped"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;button onclick="addSerum('s2', 'anti-b', 'O-')" class="text-xs bg-yellow-500 hover:bg-yellow-700 text-white px-2 py-1 rounded"&gt;Anti-B&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div id="s2-anti-rh" class="w-12 h-12 rounded-full mx-auto mb-1 border border-gray-400 not-clumped"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;button onclick="addSerum('s2', 'anti-rh', 'O-')" class="text-xs bg-green-500 hover:bg-green-700 text-white px-2 py-1 rounded"&gt;Anti-Rh&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;div class="text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label for="s2-guess" class="mr-2"&gt;Guess:&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;select id="s2-guess" class="border rounded p-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value=""&gt;Select&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="A+"&gt;A+&lt;/option&gt; &lt;option value="A-"&gt;A-&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="B+"&gt;B+&lt;/option&gt; &lt;option value="B-"&gt;B-&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="AB+"&gt;AB+&lt;/option&gt; &lt;option value="AB-"&gt;AB-&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="O+"&gt;O+&lt;/option&gt; &lt;option value="O-"&gt;O-&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button onclick="checkType('s2', 'O-')" class="bg-gray-500 hover:bg-gray-700 text-white px-2 py-1 rounded ml-2"&gt;Check&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;p id="s2-feedback" class="text-center mt-2 text-sm font-semibold"&gt;&amp;nbsp;&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;div class="border p-4 rounded-lg shadow-sm bg-gray-50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h4 class="font-semibold mb-3 text-center"&gt;Sample 3 (&lt;span class="sample-type" data-type="AB+"&gt;???&lt;/span&gt;)&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;div class="flex justify-around mb-3"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div id="s3-anti-a" class="w-12 h-12 rounded-full mx-auto mb-1 border border-gray-400 not-clumped"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;button onclick="addSerum('s3', 'anti-a', 'AB+')" class="text-xs bg-blue-500 hover:bg-blue-700 text-white px-2 py-1 rounded"&gt;Anti-A&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div id="s3-anti-b" class="w-12 h-12 rounded-full mx-auto mb-1 border border-gray-400 not-clumped"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;button onclick="addSerum('s3', 'anti-b', 'AB+')" class="text-xs bg-yellow-500 hover:bg-yellow-700 text-white px-2 py-1 rounded"&gt;Anti-B&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;div class="text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;div id="s3-anti-rh" class="w-12 h-12 rounded-full mx-auto mb-1 border border-gray-400 not-clumped"&gt;&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;button onclick="addSerum('s3', 'anti-rh', 'AB+')" class="text-xs bg-green-500 hover:bg-green-700 text-white px-2 py-1 rounded"&gt;Anti-Rh&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;div class="text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label for="s3-guess" class="mr-2"&gt;Guess:&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;select id="s3-guess" class="border rounded p-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value=""&gt;Select&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="A+"&gt;A+&lt;/option&gt; &lt;option value="A-"&gt;A-&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="B+"&gt;B+&lt;/option&gt; &lt;option value="B-"&gt;B-&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="AB+"&gt;AB+&lt;/option&gt; &lt;option value="AB-"&gt;AB-&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;option value="O+"&gt;O+&lt;/option&gt; &lt;option value="O-"&gt;O-&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;button onclick="checkType('s3', 'AB+')" class="bg-gray-500 hover:bg-gray-700 text-white px-2 py-1 rounded ml-2"&gt;Check&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;p id="s3-feedback" class="text-center mt-2 text-sm font-semibold"&gt;&amp;nbsp;&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h4 class="text-lg font-semibold mb-2"&gt;Reference Chart:&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;div class="overflow-x-auto"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;table class="w-full border-collapse border border-gray-300 text-left text-sm"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;tr class="bg-red-200"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;th class="border border-gray-300 p-2"&gt;Clumps w/ Anti-A?&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;th class="border border-gray-300 p-2"&gt;Clumps w/ Anti-B?&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;th class="border border-gray-300 p-2"&gt;Clumps w/ Anti-Rh?&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                </span>&lt;th class="border border-gray-300 p-2"&gt;Blood Type&lt;/th&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/thead&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;tr class="bg-white"&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;A+&lt;/td&gt;&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;tr class="bg-gray-50"&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;A-&lt;/td&gt;&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;tr class="bg-white"&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;B+&lt;/td&gt;&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;tr class="bg-gray-50"&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;B-&lt;/td&gt;&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;tr class="bg-white"&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;AB+&lt;/td&gt;&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;tr class="bg-gray-50"&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;AB-&lt;/td&gt;&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;tr class="bg-white"&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;Yes&lt;/td&gt;&lt;td&gt;O+&lt;/td&gt;&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;tr class="bg-gray-50"&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;No&lt;/td&gt;&lt;td&gt;O-&lt;/td&gt;&lt;/tr&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/tbody&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/table&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="inheritance" class="page hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-2xl font-semibold mb-4 text-red-700"&gt;Blood Type Inheritance&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;p class="mb-4"&gt;Your blood type is inherited via genes from your parents. You get one ABO gene (A, B, or O) and one Rh gene (+ or -) from each parent.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;ul class="list-disc list-inside mb-4 space-y-1 bg-blue-50 p-4 rounded border border-blue-200"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;li&gt;&lt;strong&gt;ABO Dominance:&lt;/strong&gt; A and B are dominant over O. A and B are co-dominant (both show). O is recessive (need two O genes for Type O).&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;li&gt;&lt;strong&gt;Rh Dominance:&lt;/strong&gt; Rh+ is dominant over Rh-. Need two Rh- genes for Rh Negative.&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;li&gt;This means children can have different blood types than their parents! (e.g., A parent (with AO genes) + B parent (with BO genes) can have an O child (OO)).&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;/ul&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;h3 class="text-xl font-semibold mb-2"&gt;Activity: Blood Type Inheritance Predictor&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;p class="mb-4 text-sm text-gray-600"&gt;Select the blood types for two parents to see the possible blood types their children could have (based on common gene combinations).&lt;/p&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4 p-4 border rounded-lg bg-gray-50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;h4 class="font-semibold mb-2"&gt;Parent 1&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;label for="p1-abo" class="mr-2"&gt;ABO:&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;select id="p1-abo" class="border rounded p-1 mb-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;option value="A"&gt;A&lt;/option&gt; &lt;option value="B"&gt;B&lt;/option&gt; &lt;option value="AB"&gt;AB&lt;/option&gt; &lt;option value="O"&gt;O&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;label for="p1-rh" class="ml-4 mr-2"&gt;Rh:&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;select id="p1-rh" class="border rounded p-1 mb-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;option value="+"&gt;+&lt;/option&gt; &lt;option value="-"&gt;-&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;h4 class="font-semibold mb-2"&gt;Parent 2&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;label for="p2-abo" class="mr-2"&gt;ABO:&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;select id="p2-abo" class="border rounded p-1 mb-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;option value="A"&gt;A&lt;/option&gt; &lt;option value="B"&gt;B&lt;/option&gt; &lt;option value="AB"&gt;AB&lt;/option&gt; &lt;option value="O"&gt;O&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;label for="p2-rh" class="ml-4 mr-2"&gt;Rh:&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;select id="p2-rh" class="border rounded p-1 mb-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;option value="+"&gt;+&lt;/option&gt; &lt;option value="-"&gt;-&lt;/option&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;/select&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;div class="text-center mb-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button onclick="calculateInheritance()" class="bg-green-600 hover:bg-green-800 text-white font-bold py-2 px-6 rounded transition duration-300"&gt;Calculate Possibilities&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;div id="inheritance-results" class="p-4 border rounded-lg bg-green-50 border-green-200 min-h-[100px]"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;h4 class="font-semibold mb-2 text-green-800"&gt;Possible Child Blood Types:&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;p id="possible-types-text"&gt;Select parent types and click calculate.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="transfusions" class="page hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-2xl font-semibold mb-4 text-red-700"&gt;Why Transfusions Matter&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="mb-4"&gt;A blood transfusion is giving donor blood to a recipient. Correct matching is VITAL.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="mb-4 p-4 bg-red-100 border border-red-300 rounded-lg"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;strong&gt;Why? Agglutination!&lt;/strong&gt; If a recipient gets incompatible blood, their antibodies attack the donor's antigens, causing dangerous clumping (agglutination) that blocks blood vessels. This can be fatal.</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;h3 class="text-lg font-semibold mb-2"&gt;General Compatibility Rules:&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;ul class="list-disc list-inside mb-4 space-y-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;li&gt;&lt;strong&gt;Type O-&lt;/strong&gt; is often called the Universal Donor (no A, B, or Rh antigens to attack).&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;li&gt;&lt;strong&gt;Type AB+&lt;/strong&gt; is often called the Universal Recipient (no Anti-A, Anti-B, or Anti-Rh antibodies to attack donated cells).&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;li&gt;Rh- people should ideally get Rh- blood. Rh+ people can get Rh+ or Rh-.&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;li&gt;The recipient's antibodies must not attack the donor's antigens.&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;/ul&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;h3 class="text-xl font-semibold mb-2"&gt;Activity: Safe Transfusion Simulation&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;p class="mb-4 text-sm text-gray-600"&gt;Your patient needs blood! Their type is shown. Drag compatible blood bag(s) from the 'Blood Bank' to the patient. Avoid dangerous mismatches!&lt;/p&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;div class="flex flex-col md:flex-row gap-6 items-start"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="w-full md:w-1/3 p-4 border rounded-lg bg-blue-100 text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;h4 class="font-semibold mb-2"&gt;Patient&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;div class="text-4xl font-bold text-blue-700 mb-2" id="patient-blood-type"&gt;B+&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;svg class="inline-block w-16 h-16 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"&gt;&lt;path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"&gt;&lt;/path&gt;&lt;/svg&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;div id="transfusion-drop-zone" class="drop-zone mt-4 p-4 min-h-[80px] bg-blue-50 border-blue-300"&gt;Drop Bag Here&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;p id="transfusion-feedback" class="mt-2 font-semibold h-8"&gt;&amp;nbsp;&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;button onclick="changePatientType()" class="mt-2 text-sm bg-gray-400 hover:bg-gray-600 text-white px-3 py-1 rounded"&gt;New Patient&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="w-full md:w-2/3 p-4 border rounded-lg bg-gray-50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;h4 class="font-semibold mb-3 text-center"&gt;Blood Bank (Drag a bag to the patient)&lt;/h4&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div id="blood-bank" class="grid grid-cols-2 sm:grid-cols-4 gap-4"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="hemostasis" class="page hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-2xl font-semibold mb-4 text-red-700"&gt;Hemostasis - Stopping the Bleeding&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="mb-4"&gt;When you get a cut, your body acts fast to stop the bleeding. This process is called &lt;strong&gt;Hemostasis&lt;/strong&gt;. It involves several steps:&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;ol class="list-decimal list-inside mb-4 space-y-2"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li&gt;&lt;strong&gt;Vascular Spasm:&lt;/strong&gt; The damaged blood vessel constricts (squeezes) immediately to reduce blood flow.&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li&gt;&lt;strong&gt;Platelet Plug Formation:&lt;/strong&gt; Tiny cell fragments called platelets stick to the damaged site and to each other, forming a temporary plug.&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li&gt;&lt;strong&gt;Coagulation (Blood Clotting):&lt;/strong&gt; This is a complex process involving clotting factors in the plasma. The end result is the formation of **fibrin**, a protein that forms a mesh over the platelet plug, trapping blood cells and making the clot stronger.&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;li&gt;&lt;strong&gt;Clot Retraction and Repair:&lt;/strong&gt; The clot gradually shrinks, pulling the edges of the damaged vessel closer together. Eventually, the vessel wall repairs itself, and the clot dissolves.&lt;/li&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/ol&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;h3 class="text-xl font-semibold mb-2"&gt;Activity: Sequence the Hemostasis Steps&lt;/h3&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;p class="mb-4 text-sm text-gray-600"&gt;Drag the steps from the 'Steps Pool' into the correct order in the 'Sequence Area' below.&lt;/p&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;div class="flex flex-col md:flex-row gap-6 items-start"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div id="hemostasis-steps-source" class="w-full md:w-1/3 p-4 border rounded-lg bg-gray-50 space-y-2 step-source"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="font-semibold mb-2"&gt;Steps Pool (Drag these):&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="w-full md:w-2/3 p-4 border rounded-lg bg-blue-50 space-y-2 step-target"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;p class="font-semibold mb-2 text-blue-800"&gt;Sequence Area (Drop in order):&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;div id="step-target-1" class="drop-zone p-2 border-blue-300 rounded" data-order="1"&gt;1. &lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;div id="step-target-2" class="drop-zone p-2 border-blue-300 rounded" data-order="2"&gt;2. &lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;div id="step-target-3" class="drop-zone p-2 border-blue-300 rounded" data-order="3"&gt;3. &lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;div id="step-target-4" class="drop-zone p-2 border-blue-300 rounded" data-order="4"&gt;4. &lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;p id="hemostasis-feedback" class="mt-2 font-semibold text-center"&gt;&amp;nbsp;&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;button onclick="checkHemostasisSequence()" class="mt-2 bg-blue-500 hover:bg-blue-700 text-white px-3 py-1 rounded block mx-auto"&gt;Check Sequence&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;button onclick="resetHemostasis()" class="mt-2 text-sm bg-gray-400 hover:bg-gray-600 text-white px-3 py-1 rounded block mx-auto"&gt;Reset&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="quiz" class="page hidden"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;h2 class="text-2xl font-semibold mb-4 text-red-700"&gt;Quiz Yourself!&lt;/h2&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="mb-6"&gt;Test your knowledge! Choose the best answer for each question.&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div id="quiz-questions" class="space-y-6"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="quiz-question border p-4 rounded-lg bg-gray-50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="font-semibold mb-2"&gt;1. What is the main job of Red Blood Cells?&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="space-y-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label class="block"&gt;&lt;input type="radio" name="q1" value="a"&gt; a) Fight Infection&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label class="block"&gt;&lt;input type="radio" name="q1" value="b" data-correct="true"&gt; b) Carry Oxygen&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label class="block"&gt;&lt;input type="radio" name="q1" value="c"&gt; c) Clot Blood&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="quiz-feedback mt-2 text-sm font-semibold"&gt;&amp;nbsp;&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;div class="quiz-question border p-4 rounded-lg bg-gray-50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="font-semibold mb-2"&gt;2. Which part of blood contains antibodies?&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="space-y-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label class="block"&gt;&lt;input type="radio" name="q2" value="a"&gt; a) Red Blood Cells&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label class="block"&gt;&lt;input type="radio" name="q2" value="b"&gt; b) White Blood Cells&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label class="block"&gt;&lt;input type="radio" name="q2" value="c" data-correct="true"&gt; c) Plasma&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label class="block"&gt;&lt;input type="radio" name="q2" value="d"&gt; d) Platelets&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;p class="quiz-feedback mt-2 text-sm font-semibold"&gt;&amp;nbsp;&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;div class="quiz-question border p-4 rounded-lg bg-gray-50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="font-semibold mb-2"&gt;3. What happens when Anti-B antibodies mix with B antigens?&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="space-y-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label class="block"&gt;&lt;input type="radio" name="q3" value="a"&gt; a) Nothing&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;label class="block"&gt;&lt;input type="radio" name="q3" value="b" data-correct="true"&gt; b) Agglutination (Clumping)&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label class="block"&gt;&lt;input type="radio" name="q3" value="c"&gt; c) Oxygen Release&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;p class="quiz-feedback mt-2 text-sm font-semibold"&gt;&amp;nbsp;&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;div class="quiz-question border p-4 rounded-lg bg-gray-50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="font-semibold mb-2"&gt;4. A person with Type O- blood is often called a...?&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="space-y-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;label class="block"&gt;&lt;input type="radio" name="q4" value="a" data-correct="true"&gt; a) Universal Donor&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;label class="block"&gt;&lt;input type="radio" name="q4" value="b"&gt; b) Universal Recipient&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>&lt;label class="block"&gt;&lt;input type="radio" name="q4" value="c"&gt; c) Common Ancestor&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;p class="quiz-feedback mt-2 text-sm font-semibold"&gt;&amp;nbsp;&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;div class="quiz-question border p-4 rounded-lg bg-gray-50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="font-semibold mb-2"&gt;5. What is the main goal of Hemostasis?&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="space-y-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;label class="block"&gt;&lt;input type="radio" name="q5" value="a"&gt; a) Carry Oxygen&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;label class="block"&gt;&lt;input type="radio" name="q5" value="b" data-correct="true"&gt; b) Stop Bleeding&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;label class="block"&gt;&lt;input type="radio" name="q5" value="c"&gt; c) Fight Infection&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;p class="quiz-feedback mt-2 text-sm font-semibold"&gt;&amp;nbsp;&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>&lt;div class="quiz-question border p-4 rounded-lg bg-gray-50"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;p class="font-semibold mb-2"&gt;6. Which component forms the initial temporary blockage in Hemostasis?&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;div class="space-y-1"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;label class="block"&gt;&lt;input type="radio" name="q6" value="a"&gt; a) Red Blood Cells&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;label class="block"&gt;&lt;input type="radio" name="q6" value="b"&gt; b) Fibrin&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>&lt;label class="block"&gt;&lt;input type="radio" name="q6" value="c" data-correct="true"&gt; c) Platelet Plug&lt;/label&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>&lt;p class="quiz-feedback mt-2 text-sm font-semibold"&gt;&amp;nbsp;&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="mt-8 text-center"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;button onclick="submitQuiz()" class="bg-blue-600 hover:bg-blue-800 text-white font-bold py-2 px-6 rounded transition duration-300"&gt;Submit Answers&lt;/button&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>&lt;p id="quiz-results" class="mt-4 text-xl font-semibold"&gt;&amp;nbsp;&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/main&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;footer class="mt-8 text-center text-sm text-gray-500"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;p&gt;This is a interactive website for anatomy, by David B, coded mostly by me, with some help from chat gtp&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/footer&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>// --- Page Navigation ---</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function showPage(pageId) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.querySelectorAll('.page').forEach(page =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>page.classList.add('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>page.classList.remove('active-page');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const activePage = document.getElementById(pageId);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (activePage) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>activePage.classList.remove('hidden');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>activePage.classList.add('active-page');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">             </span>document.querySelectorAll('.nav-button').forEach(button =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>button.classList.remove('bg-red-700');</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>button.classList.add('bg-red-500');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>});</p>
+<p class="p1"><span class="Apple-converted-space">             </span>const activeButton = document.querySelector(`button[onclick="showPage('${pageId}')"]`);</p>
+<p class="p1"><span class="Apple-converted-space">             </span>if(activeButton) {</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>activeButton.classList.remove('bg-red-500');</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>activeButton.classList.add('bg-red-700');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// --- Drag and Drop Logic ---</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let draggedItem = null;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function setupDragAndDrop() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const draggables = document.querySelectorAll('.draggable');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const dropZones = document.querySelectorAll('.drop-zone');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>draggables.forEach(draggable =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>draggable.addEventListener('dragstart', (e) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// Don't allow dragging from target zones in Hemostasis</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (draggable.closest('.step-target')) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>e.preventDefault();</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>draggedItem = e.target;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// Apply dragging style slightly later to avoid flicker</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>setTimeout(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>if (draggedItem) draggedItem.classList.add('dragging');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>} , 0);</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// Set data based on context</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>if (e.target.hasAttribute('data-info')) { // Component Builder</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>e.dataTransfer.setData('text/plain', e.target.id);</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>e.dataTransfer.setData('info', e.target.getAttribute('data-info'));</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>} else if (e.target.hasAttribute('data-blood-type')) { // Transfusion</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>e.dataTransfer.setData('text/plain', e.target.id);</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>e.dataTransfer.setData('blood-type', e.target.getAttribute('data-blood-type'));</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>} else if (e.target.hasAttribute('data-step')) { // Hemostasis</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>e.dataTransfer.setData('text/plain', e.target.textContent);</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>e.dataTransfer.setData('step-number', e.target.getAttribute('data-step'));</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>// Pass the ID of the dragged element itself</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>e.dataTransfer.setData('element-id', e.target.id);</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>draggable.addEventListener('dragend', (e) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// Use setTimeout to ensure this runs after drop event logic</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>setTimeout(() =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>// Check if draggedItem still exists before removing class</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>if (e.target) { // Use e.target as draggedItem might be nullified by drop</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>e.target.classList.remove('dragging');</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>draggedItem = null; // Clear the reference</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}, 0);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>dropZones.forEach(zone =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>zone.addEventListener('dragover', (e) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>e.preventDefault(); // Necessary to allow dropping</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// Add visual cue only if dropping is valid for this zone</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (draggedItem) { // Check if an item is being dragged</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>if ((zone.id === 'plasma-pool' &amp;&amp; draggedItem.hasAttribute('data-info')) ||</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>(zone.id === 'transfusion-drop-zone' &amp;&amp; draggedItem.hasAttribute('data-blood-type')) ||</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>(zone.id.startsWith('step-target-') &amp;&amp; draggedItem.hasAttribute('data-step')))</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>{</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>zone.classList.add('drop-zone-hover');</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>zone.addEventListener('dragleave', (e) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>zone.classList.remove('drop-zone-hover');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>zone.addEventListener('drop', (e) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>e.preventDefault();</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>zone.classList.remove('drop-zone-hover');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (!draggedItem) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>console.log("Drop event fired but draggedItem is null.");</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>return; // Exit if no item is being dragged (might happen on edge cases)</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// --- Component Builder Logic ---</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (zone.id === 'plasma-pool' &amp;&amp; draggedItem.hasAttribute('data-info')) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const info = e.dataTransfer.getData('info');</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const newItem = draggedItem.cloneNode(true); // Clone node is correct here</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>newItem.classList.remove('draggable', 'dragging');</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>newItem.classList.add('m-1', 'inline-block', 'cursor-pointer');</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>newItem.removeAttribute('id'); // Avoid duplicate IDs on clones</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>newItem.removeAttribute('draggable');</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>newItem.onclick = () =&gt; { document.getElementById('info-text').textContent = info; };</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>zone.appendChild(newItem);</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>document.getElementById('info-text').textContent = 'Component added! Click it to see info.';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// --- Transfusion Logic ---</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>else if (zone.id === 'transfusion-drop-zone' &amp;&amp; draggedItem.hasAttribute('data-blood-type')) {</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>const donorType = e.dataTransfer.getData('blood-type');</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>const patientType = document.getElementById('patient-blood-type').textContent;</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>checkTransfusionCompatibility(patientType, donorType);</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>// Note: Original draggable item remains in the blood bank.</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// --- Hemostasis Logic (Corrected) ---</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>else if (zone.classList.contains('drop-zone') &amp;&amp; zone.id.startsWith('step-target-') &amp;&amp; draggedItem.hasAttribute('data-step')) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>// Ensure the dragged item originated from the source pool (or another target pool if allowing reordering)</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>// For simplicity, we only allow dragging from the source pool here.</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>if (!draggedItem.closest('.step-source')) {</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>console.log("Attempted to drop item not from source pool.");</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>// draggedItem = null; // Clear reference if drop is invalid</p>
+<p class="p1"><span class="Apple-converted-space">                             </span>return; // Prevent dropping items dragged from within the target area</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const sourcePool = document.getElementById('hemostasis-steps-source');</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>const existingItemInZone = zone.querySelector('.step');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>// If replacing an existing step in the target zone</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>if (existingItemInZone) {</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>// Move the existing item back to the source pool</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>sourcePool.appendChild(existingItemInZone);</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>// Make it draggable again and apply source styling</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>existingItemInZone.draggable = true;</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>existingItemInZone.classList.add('draggable');</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>existingItemInZone.classList.remove('bg-gray-200'); // Remove target styling</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>existingItemInZone.classList.add('bg-indigo-100', 'border-indigo-300'); // Re-apply source styling (adjust if needed)</p>
+<p class="p1"><span class="Apple-converted-space">                            </span>existingItemInZone.style.cursor = 'grab';</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>// Clear the target zone's text content (keeping the number prefix)</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>zone.innerHTML = `${zone.getAttribute('data-order')}. `;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>// *** Move the ACTUAL dragged item (not a clone) ***</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>zone.appendChild(draggedItem);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>// Style the moved item for the target zone</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>draggedItem.classList.remove('draggable', 'dragging'); // Make it non-draggable in target</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>draggedItem.classList.add('bg-gray-200'); // Apply target styling</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>draggedItem.style.cursor = 'default';</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>draggedItem.draggable = false;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                        </span>// No need to explicitly removeChild from parent, appendChild handles the move.</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// It's generally safer to nullify draggedItem in dragend</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// draggedItem = null;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// --- Blood Typing Lab Logic ---</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function addSerum(sampleId, serumType, actualBloodType) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const well = document.getElementById(`${sampleId}-${serumType}`);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let clumps = false;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const aboType = actualBloodType.slice(0, -1);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const rhType = actualBloodType.slice(-1);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (serumType === 'anti-a' &amp;&amp; (aboType.includes('A'))) clumps = true;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>else if (serumType === 'anti-b' &amp;&amp; (aboType.includes('B'))) clumps = true;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>else if (serumType === 'anti-rh' &amp;&amp; (rhType === '+')) clumps = true;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>well.classList.remove('not-clumped', 'clumped');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>well.classList.add(clumps ? 'clumped' : 'not-clumped');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>well.setAttribute('data-clumped', clumps.toString());</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function checkType(sampleId, correctType) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const guess = document.getElementById(`${sampleId}-guess`).value;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const feedback = document.getElementById(`${sampleId}-feedback`);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const actualTypeSpan = document.querySelector(`#${sampleId}-anti-a`).closest('.border').querySelector('.sample-type');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (guess === correctType) {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>feedback.textContent = 'Correct!';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>feedback.className = 'text-center mt-2 text-sm font-semibold text-green-600';</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>actualTypeSpan.textContent = correctType;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else if (guess === "") {</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>feedback.textContent = 'Please make a selection.';</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>feedback.className = 'text-center mt-2 text-sm font-semibold text-gray-600';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>feedback.textContent = `no silly, try again`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>feedback.className = 'text-center mt-2 text-sm font-semibold text-red-600';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// --- Inheritance Predictor Logic ---</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function calculateInheritance() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const p1_abo = document.getElementById('p1-abo').value;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const p1_rh = document.getElementById('p1-rh').value;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const p2_abo = document.getElementById('p2-abo').value;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const p2_rh = document.getElementById('p2-rh').value;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const possibleABO = new Set();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const possibleRh = new Set();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">             </span>const p1_can_pass_A = p1_abo.includes('A');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>const p1_can_pass_B = p1_abo.includes('B');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>let p1_can_pass_O = p1_abo === 'A' || p1_abo === 'B' || p1_abo === 'O';</p>
+<p class="p1"><span class="Apple-converted-space">             </span>if (p1_abo === 'AB') p1_can_pass_O = false;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>if (p1_abo === 'O') {p1_can_pass_A = false; p1_can_pass_B = false;}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">             </span>const p2_can_pass_A = p2_abo.includes('A');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>const p2_can_pass_B = p2_abo.includes('B');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>let p2_can_pass_O = p2_abo === 'A' || p2_abo === 'B' || p2_abo === 'O';</p>
+<p class="p1"><span class="Apple-converted-space">             </span>if (p2_abo === 'AB') p2_can_pass_O = false;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>if (p2_abo === 'O') {p2_can_pass_A = false; p2_can_pass_B = false;}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>if ((p1_can_pass_A &amp;&amp; p2_can_pass_A) || (p1_can_pass_A &amp;&amp; p2_can_pass_O) || (p1_can_pass_O &amp;&amp; p2_can_pass_A)) possibleABO.add('A');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if ((p1_can_pass_B &amp;&amp; p2_can_pass_B) || (p1_can_pass_B &amp;&amp; p2_can_pass_O) || (p1_can_pass_O &amp;&amp; p2_can_pass_B)) possibleABO.add('B');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if ((p1_can_pass_A &amp;&amp; p2_can_pass_B) || (p1_can_pass_B &amp;&amp; p2_can_pass_A)) possibleABO.add('AB');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (p1_can_pass_O &amp;&amp; p2_can_pass_O) possibleABO.add('O');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">             </span>const p1_can_pass_pos = p1_rh === '+';</p>
+<p class="p1"><span class="Apple-converted-space">             </span>const p1_can_pass_neg = true;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>const p2_can_pass_pos = p2_rh === '+';</p>
+<p class="p1"><span class="Apple-converted-space">             </span>const p2_can_pass_neg = true;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">             </span>if (p1_can_pass_pos || p2_can_pass_pos) possibleRh.add('+');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>// Only possible to be Rh- if both parents can pass the negative allele</p>
+<p class="p1"><span class="Apple-converted-space">             </span>// (which is true if parent is Rh- or assumed Rh+/- if parent is Rh+)</p>
+<p class="p1"><span class="Apple-converted-space">             </span>// Simplified: child can be Rh- only if *both* parents are Rh- OR if *both* parents are Rh+ (assumed +/-)</p>
+<p class="p1"><span class="Apple-converted-space">             </span>// Let's stick to the simpler: Can be Rh- if both parents *can* pass neg (which is always true unless we model ++ explicitly)</p>
+<p class="p1"><span class="Apple-converted-space">              </span>if (p1_can_pass_neg &amp;&amp; p2_can_pass_neg) { // This condition is always true with current model</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>// More accurate check: Child is Rh- *only if* both parents pass '-'</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>// This happens if P1 is '-' and P2 is '-', OR P1 is +/- and P2 is '-', OR P1 is '-' and P2 is +/-, OR P1 is +/- and P2 is +/-</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>// Simplified: Can be Rh- if *at least one* parent is Rh-, OR if *both* are Rh+ (assuming +/- genotype)</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>// Let's refine: Can be Rh- if both parents are Rh- OR if one is Rh- and one is Rh+ OR if both are Rh+</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>// Safest simple rule: Can be Rh- unless *both* parents are Rh+ (and we assume ++, which isn't right).</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>// Let's use: Can be Rh- if *at least one* parent is Rh-. If both are Rh+, child *can* still be Rh- but let's simplify for this model.</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>// If both parents are Rh+, the child *can* be Rh-, but it's less likely. Let's include it.</p>
+<p class="p1"><span class="Apple-converted-space">                   </span>possibleRh.add('-'); // Allow possibility of Rh- unless explicitly ++ which we don't model.</p>
+<p class="p1"><span class="Apple-converted-space">              </span>}</p>
+<p class="p1"><span class="Apple-converted-space">             </span>// If one parent is Rh- and the other is Rh+, Rh- is possible.</p>
+<p class="p1"><span class="Apple-converted-space">             </span>// If both parents are Rh-, Rh- is the only possibility.</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const resultsText = document.getElementById('possible-types-text');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (possibleABO.size === 0 || possibleRh.size === 0) {</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>resultsText.textContent = "Error calculating possibilities.";</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>return;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>let fullTypes = [];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>possibleABO.forEach(abo =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>possibleRh.forEach(rh =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>fullTypes.push(abo + rh);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>});</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>resultsText.innerHTML = `Possible ABO types: &lt;strong class="text-green-900"&gt;${[...possibleABO].join(', ')}&lt;/strong&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                     </span>Possible Rh types: &lt;strong class="text-green-900"&gt;${[...possibleRh].join(', ')}&lt;/strong&gt;&lt;br&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                                     </span>Possible full blood types: &lt;strong class="text-green-900"&gt;${fullTypes.join(', ')}&lt;/strong&gt;`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// --- Transfusion Simulation Logic ---</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const bloodTypes = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function populateBloodBank() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const bank = document.getElementById('blood-bank');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>bank.innerHTML = '';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>bloodTypes.forEach(type =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const bag = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>// Use a unique ID for each bag based on type</p>
+<p class="p1"><span class="Apple-converted-space">                </span>bag.id = `bag-${type.replace(/[+-]/g, m =&gt; ({'+': 'pos', '-': 'neg'})[m])}`;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>bag.className = 'draggable step p-3 bg-red-200 border border-red-400 rounded-lg shadow text-center font-bold text-red-800'; // Added 'step' class for consistency if needed</p>
+<p class="p1"><span class="Apple-converted-space">                </span>bag.draggable = true;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>bag.textContent = type;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>bag.setAttribute('data-blood-type', type);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>bank.appendChild(bag);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p1"><span class="Apple-converted-space">             </span>setupDragAndDrop(); // Important to re-attach listeners after modifying DOM</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">         </span>function changePatientType() {</p>
+<p class="p1"><span class="Apple-converted-space">             </span>const newType = bloodTypes[Math.floor(Math.random() * bloodTypes.length)];</p>
+<p class="p1"><span class="Apple-converted-space">             </span>document.getElementById('patient-blood-type').textContent = newType;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>document.getElementById('transfusion-feedback').textContent = '\u00A0';</p>
+<p class="p1"><span class="Apple-converted-space">             </span>document.getElementById('transfusion-drop-zone').innerHTML = 'Drop Bag Here';</p>
+<p class="p1"><span class="Apple-converted-space">             </span>document.getElementById('transfusion-drop-zone').className = 'drop-zone mt-4 p-4 min-h-[80px] bg-blue-50 border-blue-300';</p>
+<p class="p1"><span class="Apple-converted-space">             </span>// No need to repopulate bank, bags are always the same</p>
+<p class="p1"><span class="Apple-converted-space">             </span>// populateBloodBank();</p>
+<p class="p1"><span class="Apple-converted-space">         </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">         </span>function checkTransfusionCompatibility(patientType, donorType) {</p>
+<p class="p1"><span class="Apple-converted-space">             </span>const feedbackEl = document.getElementById('transfusion-feedback');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>const dropZoneEl = document.getElementById('transfusion-drop-zone');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>let compatible = false;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>const patientABO = patientType.replace(/[+-]/, '');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>const patientRh = patientType.includes('+');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>const donorABO = donorType.replace(/[+-]/, '');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>const donorRh = donorType.includes('+');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>let aboCompatible = false;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>if (patientABO === 'AB') aboCompatible = true;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>else if (patientABO === 'A') aboCompatible = (donorABO === 'A' || donorABO === 'O');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>else if (patientABO === 'B') aboCompatible = (donorABO === 'B' || donorABO === 'O');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>else if (patientABO === 'O') aboCompatible = (donorABO === 'O');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>let rhCompatible = patientRh || !donorRh;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>compatible = aboCompatible &amp;&amp; rhCompatible;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">             </span>dropZoneEl.textContent = `Dropped: ${donorType}`;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">             </span>if (compatible) {</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>feedbackEl.textContent = 'Safe Transfusion!';</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>feedbackEl.className = 'mt-2 font-semibold h-8 text-green-600';</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>dropZoneEl.className = 'drop-zone mt-4 p-4 min-h-[80px] bg-green-100 border-green-400 correct-drop';</p>
+<p class="p1"><span class="Apple-converted-space">             </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>feedbackEl.textContent = `no silly, try again`;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>feedbackEl.className = 'mt-2 font-semibold h-8 text-red-600';</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>dropZoneEl.className = 'drop-zone mt-4 p-4 min-h-[80px] bg-red-100 border-red-400 incorrect-drop';</p>
+<p class="p1"><span class="Apple-converted-space">             </span>}</p>
+<p class="p1"><span class="Apple-converted-space">         </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// --- Hemostasis Sequence Logic ---</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function checkHemostasisSequence() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const targetZones = document.querySelectorAll('.step-target .drop-zone');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let correct = true;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let message = "Correct Sequence!";</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let allFilled = true;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>targetZones.forEach(zone =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>const expectedOrder = zone.getAttribute('data-order');</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>const droppedItem = zone.querySelector('.step');</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>if (droppedItem) {</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>const droppedOrder = droppedItem.getAttribute('data-step');</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>if (expectedOrder !== droppedOrder) {</p>
+<p class="p1"><span class="Apple-converted-space">                         </span>correct = false;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>allFilled = false;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>correct = false; // Can't be correct if not all filled</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">             </span>const feedbackEl = document.getElementById('hemostasis-feedback');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>const targetContainer = document.querySelector('.step-target');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">             </span>if (!allFilled) {</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>message = "Please fill all steps.";</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>// correct remains false</p>
+<p class="p1"><span class="Apple-converted-space">             </span>} else if (!correct) {</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>message = "no silly, try again";</p>
+<p class="p1"><span class="Apple-converted-space">             </span>}</p>
+<p class="p1"><span class="Apple-converted-space">             </span>// Else: message remains "Correct Sequence!"</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">             </span>feedbackEl.textContent = message;</p>
+<p class="p1"><span class="Apple-converted-space">             </span>if (correct &amp;&amp; allFilled) {</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>feedbackEl.className = 'mt-2 font-semibold text-center text-green-600';</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>targetContainer.classList.add('correct-sequence');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>feedbackEl.className = 'mt-2 font-semibold text-center text-red-600';</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>targetContainer.classList.remove('correct-sequence');</p>
+<p class="p1"><span class="Apple-converted-space">             </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>function resetHemostasis() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const targetZones = document.querySelectorAll('.step-target .drop-zone');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const sourcePool = document.getElementById('hemostasis-steps-source');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Move any items currently in target zones back to the source pool</p>
+<p class="p1"><span class="Apple-converted-space">            </span>targetZones.forEach(zone =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const stepElement = zone.querySelector('.step');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (stepElement) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// Reset styling and attributes before moving back</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>stepElement.draggable = true;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>stepElement.classList.add('draggable');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>stepElement.classList.remove('bg-gray-200'); // Remove target styling</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>stepElement.classList.add('step-source'); // Add source styling class if needed (using CSS rule now)</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>stepElement.style.cursor = 'grab';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>sourcePool.appendChild(stepElement); // Move the actual element</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>zone.innerHTML = `${zone.getAttribute('data-order')}. `; // Reset zone text</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Ensure all original steps are present and correctly styled in the source pool</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const originalStepsData = [</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>{ text: "Coagulation (Fibrin Mesh)", step: "3" },</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>{ text: "Vascular Spasm", step: "1" },</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>{ text: "Clot Retraction &amp; Repair", step: "4" },</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>{ text: "Platelet Plug Formation", step: "2" }</p>
+<p class="p1"><span class="Apple-converted-space">             </span>];</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const currentStepsInSource = new Map(); // Use Map to track elements</p>
+<p class="p1"><span class="Apple-converted-space">             </span>sourcePool.querySelectorAll('.step').forEach(el =&gt; currentStepsInSource.set(el.getAttribute('data-step'), el));</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">             </span>originalStepsData.forEach(stepInfo =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>let stepElement = currentStepsInSource.get(stepInfo.step);</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>if (!stepElement) {</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>// If an original step is missing, create and add it back</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>stepElement = document.createElement('div');</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>stepElement.setAttribute('data-step', stepInfo.step);</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>stepElement.textContent = stepInfo.text;</p>
+<p class="p1"><span class="Apple-converted-space">                     </span>sourcePool.appendChild(stepElement);</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>// Ensure correct attributes and classes are set/reset</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>stepElement.id = `hemo-step-${stepInfo.step}`; // Assign unique ID</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>stepElement.draggable = true;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>stepElement.className = 'draggable step p-2 rounded shadow cursor-grab'; // Reset classes fully</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>stepElement.style.cursor = 'grab';</p>
+<p class="p1"><span class="Apple-converted-space">             </span>});</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Clear feedback and visual cues</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('hemostasis-feedback').textContent = '\u00A0';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.querySelector('.step-target').classList.remove('correct-sequence');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Re-setup drag/drop listeners for items now in the source pool</p>
+<p class="p1"><span class="Apple-converted-space">            </span>setupDragAndDrop();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// --- Quiz Logic ---</p>
+<p class="p1"><span class="Apple-converted-space">        </span>function submitQuiz() {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const questions = document.querySelectorAll('.quiz-question');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let score = 0;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>let answeredCount = 0;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>questions.forEach((question, index) =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const feedbackEl = question.querySelector('.quiz-feedback');</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const selected = question.querySelector(`input[name="q${index+1}"]:checked`);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (selected) {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>answeredCount++;</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const isCorrect = selected.hasAttribute('data-correct');</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>if (isCorrect) {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>score++;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>feedbackEl.textContent = 'Correct!';</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>feedbackEl.className = 'quiz-feedback mt-2 text-sm font-semibold text-green-600';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>feedbackEl.textContent = `no silly, try again`;</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>feedbackEl.className = 'quiz-feedback mt-2 text-sm font-semibold text-red-600';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}</p>
+<p class="p1"><span class="Apple-converted-space">                </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>feedbackEl.textContent = 'Please select an answer.';</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>feedbackEl.className = 'quiz-feedback mt-2 text-sm font-semibold text-gray-600';</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">            </span>const resultsEl = document.getElementById('quiz-results');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>if (answeredCount === questions.length) {</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>resultsEl.textContent = `You scored ${score} out of ${questions.length}!`;</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>resultsEl.className = `mt-4 text-xl font-semibold ${score === questions.length ? 'text-green-600' : 'text-blue-600'}`;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} else {</p>
+<p class="p1"><span class="Apple-converted-space">                 </span>resultsEl.textContent = 'Please answer all questions before submitting.';</p>
+<p class="p1"><span class="Apple-converted-space">                  </span>resultsEl.className = 'mt-4 text-xl font-semibold text-red-600';</p>
+<p class="p1"><span class="Apple-converted-space">            </span>}</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// --- Initial Setup ---</p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.addEventListener('DOMContentLoaded', () =&gt; {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>showPage('home');</p>
+<p class="p1"><span class="Apple-converted-space">            </span>populateBloodBank(); // Populate transfusion bags first</p>
+<p class="p1"><span class="Apple-converted-space">            </span>resetHemostasis(); // Then initialize Hemostasis (which calls setupDragAndDrop)</p>
+<p class="p1"><span class="Apple-converted-space">            </span>calculateInheritance(); // Run initial inheritance calculation</p>
+<p class="p1"><span class="Apple-converted-space">            </span>// Note: setupDragAndDrop() is called within resetHemostasis() and populateBloodBank()</p>
+<p class="p1"><span class="Apple-converted-space">        </span>});</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/script&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>
